@@ -1,0 +1,21 @@
+terraform {
+  required_version = ">= 1.6.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "4.57.0"
+    }
+  }
+
+  backend "azurerm" {
+    storage_account_name = "arjundevstg"
+    container_name       = "arjunstgcont"
+    key                  = "terraform.tfstate"
+    resource_group_name  = "arjun-rg"
+  }
+}
+
+provider "azurerm" {
+  features {}
+  subscription_id = "cee0390d-e978-488c-9e05-8a5ae75fb62c"
+}

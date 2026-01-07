@@ -1,0 +1,2 @@
+variable "azurerm_storage_account" {
+}
