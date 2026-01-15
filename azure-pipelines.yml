@@ -3,11 +3,83 @@ trigger: none
 pool: Prod-Pool
 
 stages:
+  - stage: TFSEC
+    jobs:
+      - job: Linting
+        steps:
+        - task: tfsec@1
+          inputs:
+            version: 'v1.26.0'
+
   - stage: Terraform_Config
+    dependsOn: TFSEC
     displayName: Terraform Initialization
     jobs:
       - job: Terraform_init
         steps:
-        
+        - task: TerraformInstaller@1
+          displayName: Terraform Tool Installation
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTask@5
+          displayName: Terraform Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Dev'
+            backendServiceArm: 'SVC2Azure'
+            backendAzureRmStorageAccountName: 'arjundevstg'
+            backendAzureRmContainerName: 'arjunstgcont'
+            backendAzureRmKey: 'terraform.tfstate'
+
+        - task: TerraformTask@5
+          displayName: Terraform Plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Dev'
+            environmentServiceNameAzureRM: 'SVC2Azure'
+
+  - stage: Manual_Approval
+    pool: server
+    dependsOn: Terraform_Config
+    jobs:
+    - job: Approval_Request
+      steps:
+      - task: ManualValidation@1
+        inputs:
+          notifyUsers: 'arjun.pal.2411@gmail.com'
+          approvers: |
+            arjun.pal.2411@gmail.com
+            ashutosh.pal26@gmail.com
+
+  - stage: Terraform_Apply
+    displayName: Code Hi Satya Hai
+    dependsOn: Manual_Approval
+    jobs:
+    - job: Terraform_apply
+      steps:
+      - task: TerraformTask@5
+        displayName: Terraform Init
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Dev'
+          backendServiceArm: 'SVC2Azure'
+          backendAzureRmStorageAccountName: 'arjundevstg'
+          backendAzureRmContainerName: 'arjunstgcont'
+          backendAzureRmKey: 'terraform.tfstate'
+
+      - task: TerraformTask@5
+        displayName: Terraform Apply
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Dev'
+          environmentServiceNameAzureRM: 'SVC2Azure'
+
+
+
+
 
 
