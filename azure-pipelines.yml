@@ -51,7 +51,7 @@ stages:
           notifyUsers: 'arjun.pal.2411@gmail.com'
           approvers: |
             arjun.pal.2411@gmail.com
-            ashutosh.pal26@gmail.com
+
 
   - stage: Terraform_Apply
     displayName: Code Hi Satya Hai
