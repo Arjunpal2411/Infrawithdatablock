@@ -49,8 +49,8 @@ stages:
       - task: ManualValidation@1
         inputs:
           notifyUsers: 'arjun.pal.2411@gmail.com'
-          approvers: |
-            'arjun.pal.2411@gmail.com'
+          approvers: 'arjun.pal.2411@gmail.com'
+          onTimeout: 'resume'
 
 
   - stage: Terraform_Apply
